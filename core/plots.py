@@ -53,3 +53,38 @@ def wind_rose_plot(rose: pd.DataFrame) -> plt.Figure:
     ax.tick_params(axis="y", labelsize=7)
     fig.tight_layout()
     return fig
+
+
+def power_curve_plot(curve_std: pd.DataFrame, curve_site: pd.DataFrame | None = None, title: str | None = None) -> plt.Figure:
+    """Standart (ρ₀) ve saha yoğunluğuna düzeltilmiş güç eğrisi."""
+    fig, ax = plt.subplots(figsize=(6.4, 3.6), dpi=150)
+    ax.plot(curve_std["wind_speed"], curve_std["power_kw"], color=MUTED, lw=1.5, ls="--", label="Standart (ρ₀ = 1.225)")
+    if curve_site is not None:
+        ax.plot(curve_site["wind_speed"], curve_site["power_kw"], color=ACCENT, lw=2, label="Saha yoğunluğu")
+    ax.set_xlabel("Rüzgar hızı (m/s)")
+    ax.set_ylabel("Güç (kW)")
+    if title:
+        ax.set_title(title, fontsize=10)
+    ax.legend(frameon=False, fontsize=8)
+    _style(ax)
+    fig.tight_layout()
+    return fig
+
+
+def loss_waterfall(gross: float, loss_table: pd.DataFrame, net: float) -> plt.Figure:
+    """Brüt AEP'den net AEP'ye kayıp şelalesi [MWh/yıl]."""
+    labels = ["Brüt"] + loss_table["label"].tolist() + ["Net"]
+    fig, ax = plt.subplots(figsize=(6.4, 3.6), dpi=150)
+    ax.bar(0, gross, color=ACCENT)
+    level = gross
+    for i, lost in enumerate(loss_table["lost_mwh"], start=1):
+        ax.bar(i, -lost, bottom=level, color="#a2412c")
+        level -= lost
+    ax.bar(len(labels) - 1, net, color=ACCENT)
+    ax.set_xticks(range(len(labels)))
+    ax.set_xticklabels(labels, rotation=30, ha="right", fontsize=8)
+    ax.set_ylabel("MWh/yıl")
+    ax.set_ylim(net * 0.85, gross * 1.02)
+    _style(ax)
+    fig.tight_layout()
+    return fig
