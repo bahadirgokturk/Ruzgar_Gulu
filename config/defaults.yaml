@@ -155,6 +155,99 @@ losses:
     value: 0.01
     note: Şebeke kısıtı ve yük atma
     source: Varsayım, tipik aralık %0-3
-economics:     {}   # Faz 4: CAPEX, OPEX, fiyat, eskalasyon, iskonto, ömür, kredi, vergi
+economics:
+  currency:
+    value: USD
+    note: Para birimi (kullanıcı değiştirebilir; tüm parasal girdiler bu birimdedir)
+    source: Proje talimatı
+  capex_per_kw:
+    value: 1300
+    unit: USD/kW
+    note: Toplam yatırım maliyeti; küçük/tek türbinli proje için küresel ortalamanın üstünde
+    source: IRENA, Renewable Power Generation Costs in 2023 (karada rüzgar ağırlıklı ort. ≈1160 USD/kW)
+  capex_split:
+    value: {Türbin: 0.70, İnşaat: 0.12, Şebeke bağlantısı: 0.10, Diğer: 0.08}
+    note: CAPEX alt kalem payları (toplamı 1)
+    source: IRENA maliyet kırılımına göre tipik oranlar (varsayım)
+  opex_per_kw_year:
+    value: 40
+    unit: USD/kW/yıl
+    note: Sabit işletme-bakım gideri
+    source: IRENA 2023, tipik aralık 33-45 USD/kW/yıl
+  opex_per_mwh:
+    value: 0
+    unit: USD/MWh
+    note: Üretime bağlı değişken OPEX (opsiyonel)
+    source: Varsayım
+  opex_escalation:
+    value: 0.02
+    note: OPEX yıllık artış oranı
+    source: Varsayım
+  incentive_price:
+    value: 73
+    unit: USD/MWh
+    note: Teşvik dönemi satış fiyatı (kullanıcı girdisi; örnek değer)
+    source: 5346 sayılı kanun eski YEKDEM rüzgar fiyatı (7.3 USD cent/kWh)
+  incentive_years:
+    value: 10
+    unit: yıl
+    note: Teşvik dönemi süresi (0 = teşvik yok)
+    source: Eski YEKDEM süresi
+  market_price:
+    value: 60
+    unit: USD/MWh
+    note: Teşvik sonrası satış fiyatı (ilk piyasa yılı değeri)
+    source: Varsayım
+  price_escalation:
+    value: 0.01
+    note: Piyasa fiyatının yıllık eskalasyonu (teşvik fiyatı sabit)
+    source: Varsayım
+  discount_rate:
+    value: 0.08
+    note: İskonto oranı
+    source: Varsayım
+  lifetime:
+    value: 25
+    unit: yıl
+    note: Proje ömrü
+    source: Proje talimatı (20-25 yıl)
+  degradation:
+    value: 0.003
+    note: Yıllık üretim degradasyonu
+    source: Varsayım
+  tax_rate:
+    value: 0.25
+    note: Kurumlar vergisi oranı (zarar devri modellenmez)
+    source: Türkiye kurumlar vergisi oranı
+  depreciation_years:
+    value: 10
+    unit: yıl
+    note: Doğrusal amortisman süresi
+    source: Varsayım
+  loan_enabled:
+    value: false
+    note: Kredi kullanımı
+    source: Varsayım
+  loan_share:
+    value: 0.70
+    note: CAPEX'in krediyle finanse edilen payı
+    source: Varsayım
+  loan_rate:
+    value: 0.09
+    note: Kredi faiz oranı
+    source: Varsayım
+  loan_term:
+    value: 10
+    unit: yıl
+    note: Kredi vadesi (eşit taksitli anüite)
+    source: Varsayım
+  aep_sigma:
+    value: 0.10
+    note: AEP belirsizliği (1σ); P90 = P50·(1 − 1.282σ), P10 = P50·(1 + 1.282σ)
+    source: Varsayım (reanaliz verisi, ölçüm yok)
+  sensitivity_steps:
+    value: [-0.20, -0.10, 0.10, 0.20]
+    note: Duyarlılık analizinde uygulanan oransal değişimler
+    source: Proje talimatı
 environment:   {}   # Faz 5: şebeke emisyon faktörü, hane tüketimi
 report:        {}   # Faz 7: hazırlayan, para birimi gösterimi

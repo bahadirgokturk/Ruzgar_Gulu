@@ -88,3 +88,40 @@ def loss_waterfall(gross: float, loss_table: pd.DataFrame, net: float) -> plt.Fi
     _style(ax)
     fig.tight_layout()
     return fig
+
+
+def cash_flow_plot(table: pd.DataFrame, currency: str = "USD") -> plt.Figure:
+    """Yıllık net nakit akışı (çubuk) ve kümülatif nakit akışı (çizgi), milyon birim."""
+    fig, ax = plt.subplots(figsize=(6.4, 3.6), dpi=150)
+    cf = table["net_cf"] / 1e6
+    ax.bar(table.index, cf, color=["#a2412c" if v < 0 else BAR for v in cf])
+    ax.plot(table.index, table["cum_cf"] / 1e6, color=ACCENT, lw=2, label="Kümülatif")
+    ax.axhline(0, color=MUTED, lw=0.8)
+    ax.set_xlabel("Yıl")
+    ax.set_ylabel(f"Milyon {currency}")
+    ax.legend(frameon=False, fontsize=8)
+    _style(ax)
+    fig.tight_layout()
+    return fig
+
+
+def tornado_plot(sens: pd.DataFrame, metric: str = "d_npv", currency: str = "USD") -> plt.Figure:
+    """En büyük ± değişimdeki NPV (veya LCOE) farkının tornado grafiği."""
+    dmax = sens["delta"].abs().max()
+    s = sens[sens["delta"].abs() == dmax]
+    lo = s[s["delta"] < 0].set_index("label")[metric]
+    hi = s[s["delta"] > 0].set_index("label")[metric]
+    order = (hi - lo).abs().sort_values().index
+    scale = 1e6 if metric == "d_npv" else 1.0
+    fig, ax = plt.subplots(figsize=(6.4, 3.4), dpi=150)
+    y = np.arange(len(order))
+    ax.barh(y, lo[order] / scale, color="#a2412c", label=f"-%{dmax * 100:.0f}")
+    ax.barh(y, hi[order] / scale, color=ACCENT, label=f"+%{dmax * 100:.0f}")
+    ax.set_yticks(y)
+    ax.set_yticklabels(order, fontsize=8)
+    ax.axvline(0, color=MUTED, lw=0.8)
+    ax.set_xlabel(f"NPV değişimi (milyon {currency})" if metric == "d_npv" else f"LCOE değişimi ({currency}/MWh)")
+    ax.legend(frameon=False, fontsize=8)
+    ax.spines[["top", "right"]].set_visible(False)
+    fig.tight_layout()
+    return fig
