@@ -35,7 +35,8 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 html, body, [class*="css"], .stMarkdown, .stTextInput, .stNumberInput, .stSelectbox, button { font-family: "IBM Plex Sans", sans-serif; }
-#MainMenu, footer, [data-testid="stToolbar"], [data-testid="stDecoration"] { display: none; }
+#MainMenu, footer, [data-testid="stMainMenu"], [data-testid="stAppDeployButton"], [data-testid="stDecoration"] { display: none; }
+[data-testid="stHeader"] { background: transparent; }
 .block-container { padding-top: 1.6rem; max-width: 1400px; }
 [data-testid="stSidebar"] { border-right: 1px solid #d5d9d6; }
 [data-testid="stSidebar"] h3 { font-size: 0.8rem; font-weight: 600; color: #56625e; margin: 1.1rem 0 0.2rem; }
@@ -139,7 +140,7 @@ with st.sidebar:
                     try:
                         df, rep = load_power(round(ss.lat, 4), round(ss.lon, 4), int(y1), int(y2))
                         ss.data = dict(df=df, rep=rep, src="NASA POWER", h1=50, col="ws50", wd="wd50",
-                                       label=f"NASA POWER, {y1}-{y2}")
+                                       label=f"NASA POWER ({y1}-{y2})")
                     except Exception as e:  # ağ hatası vb.
                         st.error(f"Veri alınamadı. İnternet bağlantınızı kontrol edip tekrar deneyin. ({e})")
     else:
@@ -150,7 +151,7 @@ with st.sidebar:
             try:
                 df, rep = load_csv(up.getvalue(), h_meas)
                 ss.data = dict(df=df, rep=rep, src="Ölçüm", h1=h_meas, col="ws", wd="wd" if "wd" in df else None,
-                               label=f"Ölçüm verisi, {h_meas:g} m")
+                               label=f"ölçüm ({h_meas:g} m)")
             except ValueError as e:
                 st.error(str(e))
 
@@ -509,9 +510,45 @@ with tabs[5]:
     if R:
         ok, txt = ec.verdict(R, inp.discount_rate)
         st.markdown(f"<div class='verdict{'' if ok else ' no'}'>{txt}</div>", unsafe_allow_html=True)
-    st.markdown("**Rapor içeriği**")
-    st.dataframe(pd.DataFrame({"Bölüm": [
-        "Kapak, yönetici özeti", "Giriş ve amaç, saha tanımı", "Rüzgar kaynak değerlendirmesi",
-        "Türbin seçimi ve enerji üretimi", "Ekonomik analiz", "Çevresel etki", "Riskler ve belirsizlikler",
-        "Sonuç ve öneriler, ekler"]}), hide_index=True, use_container_width=True)
-    st.info("Word raporu üretimi bir sonraki fazda (Faz 7) eklenecek.")
+    rc = CFG["report"]
+    with st.expander("Kapak bilgileri", expanded=True):
+        c = st.columns(3)
+        uni = c[0].text_input("Üniversite", rc["university"]["value"])
+        dept = c[1].text_input("Bölüm", rc["department"]["value"])
+        course = c[2].text_input("Ders", rc["course"]["value"])
+        c = st.columns(3)
+        instr = c[0].text_input("Öğretim üyesi", rc["instructor"]["value"])
+        sno = c[1].text_input("Öğrenci no", rc["student_no"]["value"])
+        inc_map = c[2].toggle("Haritayı ekle", bool(rc["include_map"]["value"]), help="İnternet bağlantısı gerekir.")
+    st.caption(f"Hazırlayan: {author or 'kenar çubuğunda boş'}. Boş bırakılan alanlar kapakta görünmez.")
+
+    if st.button("Raporu oluştur", type="primary"):
+        from core.analysis import AnalysisInputs, run_analysis
+        from core.report import ReportMeta, build_report, to_pdf
+        with st.spinner("Grafikler çiziliyor ve rapor yazılıyor..."):
+            try:
+                a_inp = AnalysisInputs(
+                    lat=ss.lat, lon=ss.lon, df=df, quality=D["rep"], source_label=D["label"], turbine=turbine,
+                    econ=inp, is_nasa=D["src"] == "NASA POWER", h1=D["h1"], ws_col=D["col"], wd_col=D["wd"],
+                    n_turbines=int(n_turb), method="power" if method == "Power law" else "log", alpha=alpha,
+                    z0=z0, z0_name=z0_name, density_method=dens_method, losses=losses,
+                    emission_factor=ef, household_kwh=kwh_h, env_notes=notes)
+                meta = ReportMeta(project=project or "Adsız proje", author=author, university=uni, department=dept,
+                                  course=course, instructor=instr, student_no=sno, include_map=inc_map)
+                path = build_report(run_analysis(a_inp), meta)
+                ss.report = dict(docx=path, pdf=to_pdf(path))
+            except Exception as e:
+                ss.report = None
+                st.error(f"Rapor oluşturulamadı: {e}")
+    rep = ss.get("report")
+    if rep:
+        st.success(f"Rapor hazır: outputs/{rep['docx'].name}")
+        c = st.columns([1, 1, 3])
+        c[0].download_button("Word (.docx) indir", rep["docx"].read_bytes(), rep["docx"].name,
+                             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                             use_container_width=True)
+        if rep["pdf"]:
+            c[1].download_button("PDF indir", rep["pdf"].read_bytes(), rep["pdf"].name, "application/pdf",
+                                 use_container_width=True)
+        else:
+            c[1].caption("PDF dönüşümü için Word veya LibreOffice gerekir.")

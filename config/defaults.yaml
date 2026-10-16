@@ -260,4 +260,28 @@ environment:
     unit: kWh/yıl
     note: Ortalama konut tüketimi (~200 kWh/ay). Kaynaklar tutarsız (~2400-5000 kWh/yıl); muhafazakâr değer seçildi
     source: AA derlemesi (konutlarda aylık ~200 kWh); TÜİK/EPDK resmi değeri bulunursa güncellenmeli
-report:        {}   # Faz 7: hazırlayan, para birimi gösterimi
+report:
+  university:
+    value: İzmir Bakırçay Üniversitesi
+    note: Kapakta görünen kurum
+    source: Kullanıcı girdisi
+  department:
+    value: Elektrik-Elektronik Mühendisliği Bölümü
+    note: Kapakta görünen bölüm
+    source: Kullanıcı girdisi
+  course:
+    value: Rüzgar Enerjisi
+    note: Ders adı
+    source: Proje talimatı
+  instructor:
+    value: ""
+    note: Öğretim üyesi (boşsa kapakta görünmez)
+    source: Kullanıcı girdisi
+  student_no:
+    value: ""
+    note: Öğrenci numarası (boşsa kapakta görünmez)
+    source: Kullanıcı girdisi
+  include_map:
+    value: true
+    note: Rapora OpenStreetMap statik harita ekle (internet gerekir)
+    source: Varsayım
