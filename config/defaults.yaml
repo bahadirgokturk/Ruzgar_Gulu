@@ -1,0 +1,12 @@
+# Tüm teknik ve ekonomik varsayımlar burada tutulur. Kod içine değer gömülmez.
+# Her değer şu yapıdadır:
+#   anahtar: {value: <değer>, unit: <birim>, note: <açıklama>, source: <kaynak>}
+# Değerler ilgili fazlarda doldurulacak.
+
+data:          {}   # Faz 1: NASA POWER parametreleri, yıl aralığı, temizleme eşikleri
+wind_resource: {}   # Faz 2: alfa, z0 tablosu, gaz sabiti, rüzgar sınıfı tablosu
+energy:        {}   # Faz 3: standart hava yoğunluğu, türbin adedi
+losses:        {}   # Faz 3: iz, kullanılabilirlik, elektriksel, performans, çevresel, şebeke
+economics:     {}   # Faz 4: CAPEX, OPEX, fiyat, eskalasyon, iskonto, ömür, kredi, vergi
+environment:   {}   # Faz 5: şebeke emisyon faktörü, hane tüketimi
+report:        {}   # Faz 7: hazırlayan, para birimi gösterimi
