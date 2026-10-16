@@ -3,7 +3,51 @@
 #   anahtar: {value: <değer>, unit: <birim>, note: <açıklama>, source: <kaynak>}
 # Değerler ilgili fazlarda doldurulacak.
 
-data:          {}   # Faz 1: NASA POWER parametreleri, yıl aralığı, temizleme eşikleri
+data:
+  power_base_url:
+    value: https://power.larc.nasa.gov/api/temporal/hourly/point
+    note: NASA POWER saatlik nokta verisi endpoint'i
+    source: https://power.larc.nasa.gov/docs/services/api/temporal/hourly/
+  power_community:
+    value: RE
+    note: Renewable Energy topluluğu (rüzgar/güneş için uygun birimler)
+    source: NASA POWER API dokümantasyonu
+  power_parameters:
+    value: [WS10M, WS50M, WD10M, WD50M, T2M, PS]
+    note: "Birimler (API yanıtından doğrulandı): WS m/s, WD derece, T2M °C, PS kPa"
+    source: NASA POWER API yanıtı header/parameters alanı, 2026-10-16
+  power_time_standard:
+    value: UTC
+    note: Zaman damgaları UTC olarak istenir
+    source: NASA POWER API dokümantasyonu
+  power_fill_value:
+    value: -999.0
+    note: API'nin eksik veri için kullandığı değer, NaN'a çevrilir
+    source: NASA POWER API yanıtı header.fill_value
+  default_years:
+    value: 5
+    unit: yıl
+    note: Yıl verilmezse kullanılacak son tam yıl sayısı
+    source: Proje talimatı
+  request_timeout:
+    value: 120
+    unit: s
+    note: Tek yıllık sorgu için HTTP zaman aşımı
+    source: Varsayım (yavaş bağlantılar için geniş tutuldu)
+  request_retries:
+    value: 3
+    note: Başarısız sorguda tekrar deneme sayısı
+    source: Varsayım
+  max_wind_speed:
+    value: 50.0
+    unit: m/s
+    note: Bu değerin üstündeki hızlar fiziksel olmayan kabul edilip silinir
+    source: Proje talimatı
+  min_wind_speed:
+    value: 0.0
+    unit: m/s
+    note: Negatif hızlar silinir
+    source: Fiziksel sınır
 wind_resource: {}   # Faz 2: alfa, z0 tablosu, gaz sabiti, rüzgar sınıfı tablosu
 energy:        {}   # Faz 3: standart hava yoğunluğu, türbin adedi
 losses:        {}   # Faz 3: iz, kullanılabilirlik, elektriksel, performans, çevresel, şebeke
