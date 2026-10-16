@@ -48,7 +48,59 @@ data:
     unit: m/s
     note: Negatif hızlar silinir
     source: Fiziksel sınır
-wind_resource: {}   # Faz 2: alfa, z0 tablosu, gaz sabiti, rüzgar sınıfı tablosu
+wind_resource:
+  gas_constant_dry_air:
+    value: 287.05
+    unit: J/(kg·K)
+    note: Kuru hava özgül gaz sabiti, ρ = P/(R·T)
+    source: Proje talimatı; standart değer
+  fixed_alpha:
+    value: 0.143
+    note: Sabit power law üssü (1/7 kuralı), kullanıcı sahaya özel α yerine seçebilir
+    source: Manwell vd., Wind Energy Explained (2. baskı), Bölüm 2
+  alpha_heights:
+    value: [10, 50]
+    unit: m
+    note: Sahaya özel α hesabında kullanılan NASA POWER ölçüm yükseklikleri
+    source: NASA POWER parametreleri (WS10M, WS50M)
+  calm_threshold:
+    value: 0.5
+    unit: m/s
+    note: Bu hızın altı sakin kabul edilir (istatistikte raporlanır)
+    source: Varsayım
+  local_utc_offset:
+    value: 3
+    unit: saat
+    note: Saatlik profilin yerel saatle gösterimi (Türkiye UTC+3)
+    source: Türkiye saat dilimi
+  wind_rose_sectors:
+    value: 16
+    note: Rüzgar gülü sektör sayısı
+    source: Proje talimatı
+  roughness_z0:
+    unit: m
+    note: Arazi pürüzlülük uzunluğu tablosu (log law)
+    source: Manwell vd., Wind Energy Explained (2. baskı), Tablo 2.2 (Wieringa kaynaklı)
+    value:
+      Durgun açık deniz: 0.0002
+      Dalgalı deniz: 0.0005
+      Kar yüzeyi: 0.003
+      Çimenlik: 0.008
+      Engebeli mera: 0.01
+      Nadas tarlası: 0.03
+      Ekili tarım arazisi: 0.05
+      Az ağaçlı arazi: 0.1
+      Çok ağaçlı, çitli, seyrek yapılı arazi: 0.25
+      Orman ve koruluk: 0.5
+      Banliyö: 1.5
+      Yüksek binalı şehir merkezi: 3.0
+  wind_power_classes:
+    unit: W/m²
+    note: Sınıf alt sınırları (1. sınıf 0'dan başlar, 7. sınıf üst sınırsız)
+    source: Elliott vd. (1986), Wind Energy Resource Atlas of the United States, NREL/PNL
+    value:
+      10: [0, 100, 150, 200, 250, 300, 400]
+      50: [0, 200, 300, 400, 500, 600, 800]
 energy:        {}   # Faz 3: standart hava yoğunluğu, türbin adedi
 losses:        {}   # Faz 3: iz, kullanılabilirlik, elektriksel, performans, çevresel, şebeke
 economics:     {}   # Faz 4: CAPEX, OPEX, fiyat, eskalasyon, iskonto, ömür, kredi, vergi
