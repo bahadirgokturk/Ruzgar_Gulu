@@ -9,3 +9,6 @@ outputs/*
 !outputs/.gitkeep
 ~$*.docx
 .claude/
+!outputs/ornek_rapor.docx
+!outputs/ornek_rapor.pdf
+docs/*.tmp

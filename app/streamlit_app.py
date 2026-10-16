@@ -108,6 +108,13 @@ if "pending_loc" in ss:                      # haritadan gelen konum, widget'lar
     ss.data = None
 
 y_def = default_year_range()
+if ss.data is None and st.query_params.get("ornek") == "1":     # ?ornek=1: örnek sahayı (İzmir) otomatik yükle
+    try:
+        _df, _rep = load_power(round(ss.lat, 4), round(ss.lon, 4), y_def[0], y_def[1])
+        ss.data = dict(df=_df, rep=_rep, src="NASA POWER", h1=50, col="ws50", wd="wd50",
+                       label=f"NASA POWER ({y_def[0]}-{y_def[1]})")
+    except Exception:
+        pass
 turbines = turbine_list()
 wr_cfg, en_cfg = CFG["wind_resource"], CFG["energy"]
 
@@ -355,7 +362,7 @@ with tabs[1]:
                 "Yöntem": [f"Power law (α = {cm['alpha']:.3f})", f"Log law (z₀ = {z0:g} m)"],
                 "Ortalama hız (m/s)": [f"{cm['power_mean']:.2f}", f"{cm['log_mean']:.2f}"]}),
                 hide_index=True, use_container_width=True)
-            st.caption(f"İki yöntem arasındaki fark %{cm['diff_pct']:.1f}. Hesapta seçili yöntem: {method}.")
+            st.caption(f"İki yöntem arasındaki fark %{abs(cm['diff_pct']):.1f}. Hesapta seçili yöntem: {method}.")
         else:
             st.metric(f"{method} ile ortalama", f"{ws_hub.mean():.2f} m/s")
         yearly, cov = wr.annual_variability(ref)
@@ -410,7 +417,7 @@ with tabs[2]:
             "Yöntem": ["Zaman serisi", "Weibull integrali"],
             "Brüt AEP (MWh/yıl)": [fmt(E["gross_aep_ts"]), fmt(E["gross_aep_weibull"])]}),
             hide_index=True, use_container_width=True)
-        st.caption(f"Fark %{E['method_diff_pct']:.1f}. Göbek yüksekliğinde Weibull k = {w_hub.k:.2f}, "
+        st.caption(f"Fark %{abs(E['method_diff_pct']):.1f}. Göbek yüksekliğinde Weibull k = {w_hub.k:.2f}, "
                    f"c = {w_hub.c:.2f} m/s. Net AEP zaman serisi yöntemine göre hesaplanır.")
 
 # ---------------------------------------------------------------- 4. ekonomi

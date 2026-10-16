@@ -420,7 +420,7 @@ def build_report(r: AnalysisResult, meta: ReportMeta, out_dir: Path = OUTPUT_DIR
         D.table([[f"Power law (α = {c['alpha']:.3f})", f"{c['power_mean']:.2f}"],
                  [f"Log law (z₀ = {c['z0']:g} m)", f"{c['log_mean']:.2f}"]],
                 f"{i.turbine.hub_height:g} m ortalama hız, yöntem karşılaştırması", ["Yöntem", "Ortalama hız (m/s)"], [8, 6])
-        D.p(f"İki yöntem arasındaki fark %{c['diff_pct']:.1f}'dir.")
+        D.p(f"İki yöntem arasındaki fark %{abs(c['diff_pct']):.1f}'dir.")
 
     # ---- 5. türbin ve enerji
     D.h1(5, SECTION_TITLES[4])
@@ -434,7 +434,7 @@ def build_report(r: AnalysisResult, meta: ReportMeta, out_dir: Path = OUTPUT_DIR
     D.p(f"Şekil {n}'de güç eğrisi saha ortalama hava yoğunluğuna ({r.rho:.3f} kg/m³) göre düzeltilmiştir.")
     D.table([["Zaman serisi", fmt(e["gross_aep_ts"])], ["Weibull integrali", fmt(e["gross_aep_weibull"])]],
             "Brüt AEP, yöntem karşılaştırması", ["Yöntem", "Brüt AEP (MWh/yıl)"], [8, 6])
-    D.p(f"İki yöntem arasındaki fark %{e['method_diff_pct']:.1f}'dir. Net üretim zaman serisi yöntemine göre hesaplanmıştır.")
+    D.p(f"İki yöntem arasındaki fark %{abs(e['method_diff_pct']):.1f}'dir. Net üretim zaman serisi yöntemine göre hesaplanmıştır.")
     lt = e["loss_table"]
     D.table([[row.label, f"%{100 * row.rate:.1f}", fmt(row.lost_mwh)] for row in lt.itertuples()]
             + [["Toplam (çarpımsal)", f"%{e['total_loss_pct']:.1f}", fmt(e["gross_aep_ts"] - e["net_aep"])]],
