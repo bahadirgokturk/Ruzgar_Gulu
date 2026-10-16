@@ -249,5 +249,15 @@ economics:
     value: [-0.20, -0.10, 0.10, 0.20]
     note: Duyarlılık analizinde uygulanan oransal değişimler
     source: Proje talimatı
-environment:   {}   # Faz 5: şebeke emisyon faktörü, hane tüketimi
+environment:
+  grid_emission_factor:
+    value: 0.438
+    unit: tCO₂/MWh
+    note: Türkiye geneli elektrik üretimi emisyon faktörü (ortalama). Alternatif birleşik marj (CM) yöntemi TUESEF bilgi formunda
+    source: ETKB, 2022 Üretim ve Tüketim Noktası Emisyon Faktörleri
+  household_consumption:
+    value: 2400
+    unit: kWh/yıl
+    note: Ortalama konut tüketimi (~200 kWh/ay). Kaynaklar tutarsız (~2400-5000 kWh/yıl); muhafazakâr değer seçildi
+    source: AA derlemesi (konutlarda aylık ~200 kWh); TÜİK/EPDK resmi değeri bulunursa güncellenmeli
 report:        {}   # Faz 7: hazırlayan, para birimi gösterimi

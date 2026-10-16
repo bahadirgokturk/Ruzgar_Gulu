@@ -8,3 +8,4 @@ data/cache/*
 outputs/*
 !outputs/.gitkeep
 ~$*.docx
+.claude/

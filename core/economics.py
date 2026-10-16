@@ -170,6 +170,17 @@ def evaluate(inp: EconomicInputs, net_aep: float, capacity_kw: float) -> dict[st
     }
 
 
+def verdict(result: dict[str, Any], discount_rate: float) -> tuple[bool, str]:
+    """Fizibilite yorumu: NPV > 0 ise fizibil. Otomatik Türkçe cümle döndürür."""
+    npv_, irr_ = result["npv"], result["irr"]
+    irr_txt = "hesaplanamadı" if irr_ is None else f"%{100 * irr_:.1f}"
+    if npv_ > 0:
+        return True, (f"Proje bu varsayımlarla fizibil görünüyor. NPV pozitif ve IRR ({irr_txt}), "
+                      f"%{100 * discount_rate:.0f} iskonto oranının üzerinde.")
+    return False, (f"Proje bu varsayımlarla fizibil görünmüyor. NPV negatif ve IRR ({irr_txt}), "
+                   f"%{100 * discount_rate:.0f} iskonto oranının altında kalıyor.")
+
+
 SENSITIVITY_PARAMS = {
     "capex": "CAPEX",
     "price": "Satış fiyatı",
